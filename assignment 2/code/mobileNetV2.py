@@ -43,7 +43,7 @@ def build_mobilenetv2_unet(input_shape):
     d3 = decoder_block(d2, s2, res_size[2])                       
     d4 = decoder_block(d3, s1, res_size[3])
 
-    outputs = Conv2D(1, 1, padding="same", activation="sigmoid")(d4)
+    outputs = Conv2D(3, 3, padding="same", activation="sigmoid")(d4)
 
     model = Model(inputs, outputs, name="MobileNetV2_U-Net")
     return model
