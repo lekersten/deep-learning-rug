@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Conv2D, BatchNormalization, Activation, Conv2DTranspose, Concatenate, Input
 from tensorflow.keras.models import Model
-from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.applications import MobileNetV2, ResNet50
 
 
 def conv_block(inputs, num_filters):
