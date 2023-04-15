@@ -18,4 +18,4 @@ if __name__ == "__main__":
     elif sys.argv[2] == "mae":
         loss = utils.WeightedMeanAbsoluteError(A_weights, B_weights)
 
-    utils.kfold_cv(model, train_dataset, loss, 10)
+    utils.kfold_cv(model, train_dataset, loss, 10, sys.argv[1], sys.argv[2])
