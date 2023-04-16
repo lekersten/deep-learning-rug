@@ -145,6 +145,8 @@ def kfold_cv(model, train_ds, loss, epochs, model_str, loss_str, k=5):
 
         model.save_weights(f"models/{model_str}_{loss_str}_{fold+1}.h5")
 
+        print(evaluate_image_quality(model, test_dataset))
+
         # Save the history to a dictionary
         fold_history = {
             'fold': fold + 1,
@@ -162,6 +164,7 @@ def kfold_cv(model, train_ds, loss, epochs, model_str, loss_str, k=5):
 
     # Save the DataFrame to a CSV file
     history_df.to_csv(f'loss/history_{model_str}_{loss_str}.csv', index=False)
+
 
 
 def evaluate_image_quality(model, test_ds):
