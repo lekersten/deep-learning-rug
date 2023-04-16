@@ -19,3 +19,5 @@ if __name__ == "__main__":
         loss = utils.WeightedMeanAbsoluteError(A_weights, B_weights)
 
     utils.kfold_cv(model, train_dataset, loss, 10, sys.argv[1], sys.argv[2])
+
+    print(evaluate_image_quality(model, test_dataset))

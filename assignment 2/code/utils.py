@@ -2,6 +2,9 @@ import tensorflow as tf
 from tensorflow.image import ssim
 from tensorflow.math import reduce_mean
 import matplotlib.pyplot as plt
+from skimage.metrics import structural_similarity as ssim_sk
+from skimage.metrics import peak_signal_noise_ratio as psnr
+
 
 class WeightedSSIMLoss(tf.keras.losses.Loss):
     def __init__(self, A_weights, B_weights, max_val=1.0, **kwargs):
@@ -159,5 +162,39 @@ def kfold_cv(model, train_ds, loss, epochs, model_str, loss_str, k=5):
 
     # Save the DataFrame to a CSV file
     history_df.to_csv(f'loss/history_{model_str}_{loss_str}.csv', index=False)
+
+
+def evaluate_image_quality(model, test_ds):
+    mae_values = []
+    ssim_values = []
+    psnr_values = []
+
+    for L_batch, AB_batch in test_ds:
+        # Make predictions
+        AB_pred = model.predict(L_batch)
+
+        for AB_true, AB_pred_single in zip(AB_batch, AB_pred):
+            # Calculate Mean Absolute Error
+            mae = tf.keras.losses.MeanAbsoluteError()(AB_true, AB_pred_single).numpy()
+            mae_values.append(mae)
+
+            # Convert AB_true and AB_pred_single to the same data type
+            AB_true_np = AB_true.numpy().astype('float64')
+            AB_pred_single_np = AB_pred_single.astype('float64')
+
+            # Calculate SSIM
+            ssim_value = ssim_sk(AB_true_np, AB_pred_single_np, multichannel=True, data_range=AB_pred_single_np.max() - AB_pred_single_np.min())
+            ssim_values.append(ssim_value)
+
+            # Calculate PSNR
+            psnr_value = psnr(AB_true_np, AB_pred_single_np, data_range=AB_pred_single_np.max() - AB_pred_single_np.min())
+            psnr_values.append(psnr_value)
+
+    # Compute average values
+    average_mae = sum(mae_values) / len(mae_values)
+    average_ssim = sum(ssim_values) / len(ssim_values)
+    average_psnr = sum(psnr_values) / len(psnr_values)
+
+    return average_mae, average_ssim, average_psnr
 
 
